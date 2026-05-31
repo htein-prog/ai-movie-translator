@@ -16,7 +16,7 @@ jobs:
 
     - name: Install Buildozer Dependencies
       run: |
-        sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libgdbm-dev libssl-dev libffi-dev cmake gettext texinfo build-essential patch lld
+        sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libgdbm-dev libssl-dev libffi-dev cmake gettext texinfo build-essential patch lld jq
         pip install --upgrade pip
         pip install cython==0.29.33 buildozer
 
@@ -29,10 +29,19 @@ jobs:
     - name: Build Android APK with Microsoft Cloud Server
       run: buildozer -v android debug
 
-    - name: Upload APK Directly to Google Drive
-      uses: jakejarvis/google-drive-upload-action@master
-      with:
-        credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
-        filename: bin/*.apk
-        folderId: ${{ secrets.GDRIVE_TARGET_FOLDER }}
+    - name: Upload APK directly to Google Drive via native curl API
+      run: |
+        APK_FILE=$(ls bin/*.apk | head -n 1)
+        FILE_NAME=$(basename "$APK_FILE")
+        
+        # Google Drive standard API upload logic
+        ACCESS_TOKEN=$(echo '${{ secrets.GDRIVE_CREDENTIALS }}' | jq -r '.token_type + " " + .access_token' 2>/dev/null || echo "Bearer ${{ secrets.GDRIVE_CREDENTIALS }}")
+        
+        curl -X POST -L \
+          -H "Authorization: $ACCESS_TOKEN" \
+          -F "metadata={name: '$FILE_NAME', parents: ['${{ secrets.GDRIVE_TARGET_FOLDER }}']};type=application/json" \
+          -F "file=@$APK_FILE" \
+          "https://googleapis.com"
+        
+        echo "🚀 Success! APK has been sent to Google Drive."
 
