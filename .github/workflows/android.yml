@@ -27,12 +27,5 @@ jobs:
         sed -i 's/^#\s*android.permissions =.*/android.permissions = INTERNET, READ_MEDIA_VIDEO, WRITE_EXTERNAL_STORAGE/' buildozer.spec
 
     - name: Build Android APK with Microsoft Cloud Server
-      run: buildozer -v android debug
+         - name: Upload APK Directly to Google Driလို:       uses: jakejarvis/google-drive-upload-action@mast      wit         credentials: ${{ secrets.GDRIVE_CREDENTIALS          filename: bin/*.a         folderId: ${{ secrets.GDRIVE_TARGET_FOLDER }}
 
-    - name: Upload APK Directly to Google Drive
-      uses: adityassana/google-drive-upload-gitaction@v1
-      with:
-        credentials: ${{ secrets.GDRIVE_CREDENTIALS }}
-        filename: bin/*.apk
-        folderId: ${{ secrets.GDRIVE_TARGET_FOLDER }}
-        overwrite: "true"
