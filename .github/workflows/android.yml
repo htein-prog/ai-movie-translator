@@ -2,6 +2,11 @@ name: Build Automated APK to Google Drive
 on:
   workflow_dispatch:
 
+# GitHub Node.js 24 စနစ်သစ် ပိတ်ဆို့မှုကို အတင်းအဓမ္မ ကျော်လွှားခိုင်းသည့် အမိန့်စာသား (Bypass Variables)
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
+
 jobs:
   build:
     runs-on: ubuntu-latest
