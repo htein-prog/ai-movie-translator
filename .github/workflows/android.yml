@@ -7,10 +7,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Checkout Code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Set up Python
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
@@ -34,7 +34,6 @@ jobs:
         APK_FILE=$(ls bin/*.apk | head -n 1)
         FILE_NAME=$(basename "$APK_FILE")
         
-        # Google Drive standard API upload logic
         ACCESS_TOKEN=$(echo '${{ secrets.GDRIVE_CREDENTIALS }}' | jq -r '.token_type + " " + .access_token' 2>/dev/null || echo "Bearer ${{ secrets.GDRIVE_CREDENTIALS }}")
         
         curl -X POST -L \
@@ -44,4 +43,3 @@ jobs:
           "https://googleapis.com"
         
         echo "🚀 Success! APK has been sent to Google Drive."
-
